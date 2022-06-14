@@ -17,8 +17,14 @@ function getMessageData(message_data_type, source) {
 // awaits and returns the result message sent in reply from `frame`.
 async function postCapabilityDelegationMessage(frame, message, origin, capability, activate) {
     let result_promise = getMessageData("result", frame);
+
     if (activate)
         await test_driver.bless();
-    frame.postMessage(message, {targetOrigin: origin, delegate: capability});
+
+    let postMessageOptions = {targetOrigin: origin};
+    if (capability)
+        postMessageOptions["delegate"] = capability;
+    frame.postMessage(message, postMessageOptions);
+
     return await result_promise;
 }
